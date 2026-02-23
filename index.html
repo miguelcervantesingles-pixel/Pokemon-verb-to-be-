@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pokémon: Verb TO BE Adventure!</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --yellow: #FFD700;
+    --red: #FF1744;
+    --blue: #1565C0;
+    --light-blue: #42A5F5;
+    --green: #00C853;
+    --dark: #1a1a2e;
+    --white: #FFFFFF;
+    --card-bg: #16213e;
+    --correct: #00E676;
+    --wrong: #FF1744;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image: 
+      radial-gradient(circle at 20% 20%, rgba(21,101,192,0.3) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(255,23,68,0.2) 0%, transparent 50%);
+  }
+
+  /* Stars background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+      radial-gradient(1px 1px at 10% 15%, white 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 40%, white 0%, transparent 100%),
+      radial-gradient(1px 1px at 50% 10%, white 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 60%, white 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 25%, white 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 70%, white 0%, transparent 100%),
+      radial-gradient(1px 1px at 45% 80%, white 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 90%, white 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    padding: 20px 0 10px;
+  }
+
+  .logo {
+    font-family: 'Press Start 2P', cursive;
+    font-size: clamp(14px, 3vw, 22px);
+    color: var(--yellow);
+    text-shadow: 3px 3px 0 #b8860b, 0 0 20px rgba(255,215,0,0.5);
+    letter-spacing: 2px;
+    margin-bottom: 5px;
+  }
+
+  .subtitle {
+    font-family: 'Press Start 2P', cursive;
+    font-size: clamp(8px, 1.5vw, 12px);
+    color: var(--light-blue);
+    text-shadow: 2px 2px 0 #0d47a1;
+  }
+
+  /* PROGRESS BAR */
+  .progress-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50px;
+    padding: 10px 20px;
+    border: 2px solid rgba(255,215,0,0.2);
+  }
+
+  .pokeball-icon {
+    font-size: 24px;
+    animation: spin 3s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .progress-bar-wrap {
+    flex: 1;
+    height: 16px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid rgba(255,255,255,0.15);
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--yellow), #FFA500);
+    border-radius: 8px;
+    transition: width 0.5s ease;
+    box-shadow: 0 0 10px rgba(255,215,0,0.6);
+  }
+
+  .progress-text {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    color: var(--yellow);
+    white-space: nowrap;
+  }
+
+  /* SCORE */
+  .score-board {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 8px 0 16px;
+  }
+
+  .score-item {
+    background: rgba(255,255,255,0.07);
+    border-radius: 12px;
+    padding: 8px 18px;
+    text-align: center;
+    border: 2px solid rgba(255,255,255,0.1);
+  }
+
+  .score-label {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 7px;
+    color: rgba(255,255,255,0.5);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .score-value {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 16px;
+  }
+
+  .score-correct .score-value { color: var(--correct); }
+  .score-wrong .score-value { color: var(--wrong); }
+
+  /* TYPE BADGE */
+  .type-badge {
+    display: inline-block;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 8px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+
+  .type-affirmative { background: #1565C0; color: white; border: 2px solid #42A5F5; }
+  .type-negative { background: #b71c1c; color: white; border: 2px solid #FF1744; }
+  .type-question { background: #1b5e20; color: white; border: 2px solid #00C853; }
+
+  /* GAME CARD */
+  .game-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 24px;
+    border: 3px solid rgba(255,215,0,0.3);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+    margin-bottom: 16px;
+    animation: cardIn 0.4s ease;
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* POKEMON DISPLAY */
+  .pokemon-area {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .pokemon-sprite {
+    font-size: 70px;
+    line-height: 1;
+    filter: drop-shadow(0 0 12px rgba(255,215,0,0.4));
+    animation: float 2s ease-in-out infinite;
+    min-width: 80px;
+    text-align: center;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .pokemon-info {
+    flex: 1;
+  }
+
+  .pokemon-name {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    color: var(--yellow);
+    margin-bottom: 6px;
+  }
+
+  .pokemon-hint {
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.5;
+    font-weight: 700;
+  }
+
+  .pokemon-hint span {
+    color: var(--yellow);
+    font-weight: 900;
+  }
+
+  /* DROP ZONE */
+  .sentence-area {
+    margin: 16px 0;
+  }
+
+  .drop-zone-label {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 8px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .drop-zone {
+    min-height: 60px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 12px;
+    border: 2px dashed rgba(255,215,0,0.3);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px;
+    transition: all 0.2s;
+    align-items: center;
+  }
+
+  .drop-zone.drag-over {
+    background: rgba(255,215,0,0.08);
+    border-color: var(--yellow);
+    box-shadow: 0 0 20px rgba(255,215,0,0.2);
+  }
+
+  .drop-zone.correct-answer {
+    background: rgba(0,230,118,0.08);
+    border-color: var(--correct);
+    border-style: solid;
+  }
+
+  .drop-zone.wrong-answer {
+    background: rgba(255,23,68,0.08);
+    border-color: var(--wrong);
+    border-style: solid;
+  }
+
+  .placeholder-text {
+    color: rgba(255,255,255,0.2);
+    font-family: 'Press Start 2P', cursive;
+    font-size: 8px;
+    padding: 8px;
+  }
+
+  /* WORD TOKENS */
+  .word-bank {
+    margin-top: 16px;
+  }
+
+  .word-bank-label {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 8px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .word-bank-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 50px;
+    padding: 8px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .word-token {
+    background: linear-gradient(135deg, #1565C0, #0d47a1);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    cursor: grab;
+    user-select: none;
+    border: 2px solid #42A5F5;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3), 0 2px 0 #0a2a5e;
+    transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+    touch-action: none;
+  }
+
+  .word-token:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4), 0 0 12px rgba(66,165,245,0.4);
+  }
+
+  .word-token:active, .word-token.dragging {
+    cursor: grabbing;
+    opacity: 0.7;
+    transform: rotate(3deg) scale(1.1);
+  }
+
+  .word-token.in-drop-zone {
+    background: linear-gradient(135deg, #1b5e20, #2e7d32);
+    border-color: #00C853;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3), 0 2px 0 #0a2e0a;
+  }
+
+  /* BUTTONS */
+  .btn-group {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.4);
+    letter-spacing: 1px;
+  }
+
+  .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.4); }
+
+  .btn-check {
+    background: linear-gradient(135deg, var(--yellow), #FFA500);
+    color: var(--dark);
+  }
+
+  .btn-check:hover { background: linear-gradient(135deg, #ffe033, #ffb733); }
+
+  .btn-clear {
+    background: linear-gradient(135deg, #424242, #212121);
+    color: white;
+    border: 2px solid #616161;
+  }
+
+  .btn-next {
+    background: linear-gradient(135deg, var(--green), #00a846);
+    color: white;
+    display: none;
+  }
+
+  .btn-next.show { display: inline-block; animation: pulse 0.5s ease; }
+
+  @keyframes pulse {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  /* FEEDBACK */
+  .feedback {
+    text-align: center;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 12px;
+    display: none;
+    animation: feedbackIn 0.3s ease;
+  }
+
+  @keyframes feedbackIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .feedback.correct {
+    background: rgba(0,230,118,0.15);
+    color: var(--correct);
+    border: 2px solid var(--correct);
+    display: block;
+  }
+
+  .feedback.wrong {
+    background: rgba(255,23,68,0.15);
+    color: var(--wrong);
+    border: 2px solid var(--wrong);
+    display: block;
+  }
+
+  .correct-sentence {
+    margin-top: 8px;
+    font-size: 9px;
+    color: rgba(255,255,255,0.8);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+  }
+
+  /* FINAL SCREEN */
+  #final-screen {
+    display: none;
+    text-align: center;
+    padding: 30px;
+    animation: cardIn 0.5s ease;
+  }
+
+  .final-pokemon {
+    font-size: 100px;
+    animation: float 2s ease-in-out infinite;
+    margin: 10px 0;
+  }
+
+  .final-title {
+    font-family: 'Press Start 2P', cursive;
+    font-size: clamp(14px, 3vw, 20px);
+    color: var(--yellow);
+    text-shadow: 3px 3px 0 #b8860b;
+    margin: 16px 0;
+  }
+
+  .grade-display {
+    font-family: 'Press Start 2P', cursive;
+    font-size: clamp(40px, 10vw, 80px);
+    margin: 20px 0;
+    text-shadow: 4px 4px 0 rgba(0,0,0,0.3);
+  }
+
+  .grade-a { color: #00E676; }
+  .grade-b { color: #FFEB3B; }
+  .grade-c { color: #FFA726; }
+  .grade-d { color: #FF1744; }
+
+  .name-input-section {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .name-input-label {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .name-input {
+    background: rgba(255,255,255,0.1);
+    border: 2px solid var(--yellow);
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    color: white;
+    text-align: center;
+    outline: none;
+    width: 280px;
+  }
+
+  .name-input::placeholder { color: rgba(255,255,255,0.3); }
+  .name-input:focus { box-shadow: 0 0 20px rgba(255,215,0,0.3); }
+
+  .btn-report {
+    background: linear-gradient(135deg, var(--yellow), #FFA500);
+    color: var(--dark);
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    padding: 14px 28px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #b8860b;
+    transition: all 0.15s;
+    letter-spacing: 1px;
+  }
+
+  .btn-report:hover { background: linear-gradient(135deg, #ffe033, #ffb733); }
+  .btn-report:active { transform: translateY(3px); box-shadow: 0 1px 0 #b8860b; }
+
+  /* REPORT */
+  #report-section {
+    display: none;
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 30px;
+    border: 3px solid var(--yellow);
+    margin-top: 20px;
+    text-align: left;
+    animation: cardIn 0.4s ease;
+  }
+
+  .report-title {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    color: var(--yellow);
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid rgba(255,215,0,0.2);
+    padding-bottom: 16px;
+  }
+
+  .report-field {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .report-field-label { color: rgba(255,255,255,0.5); }
+  .report-field-value { color: white; }
+
+  .report-final-grade {
+    text-align: center;
+    margin-top: 20px;
+    padding: 20px;
+    background: rgba(255,215,0,0.07);
+    border-radius: 12px;
+    border: 2px solid rgba(255,215,0,0.2);
+  }
+
+  .report-grade-label {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 9px;
+    color: rgba(255,255,255,0.5);
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .report-grade-value {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 48px;
+  }
+
+  .report-breakdown {
+    margin-top: 16px;
+  }
+
+  .report-breakdown-title {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 9px;
+    color: var(--light-blue);
+    margin-bottom: 10px;
+  }
+
+  .report-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .report-item-correct { background: rgba(0,230,118,0.1); color: rgba(255,255,255,0.8); }
+  .report-item-wrong { background: rgba(255,23,68,0.1); color: rgba(255,255,255,0.5); }
+  .report-item-badge { font-family: 'Press Start 2P', cursive; font-size: 8px; padding: 2px 8px; border-radius: 4px; }
+  .badge-correct { background: var(--correct); color: #000; }
+  .badge-wrong { background: var(--wrong); color: #fff; }
+
+  .btn-print {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    background: linear-gradient(135deg, #1565C0, #0d47a1);
+    color: white;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    padding: 14px;
+    border-radius: 10px;
+    border: 2px solid #42A5F5;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #0a2a5e;
+    transition: all 0.15s;
+  }
+
+  .btn-print:hover { background: linear-gradient(135deg, #1976D2, #1565C0); }
+  .btn-print:active { transform: translateY(3px); box-shadow: 0 1px 0 #0a2a5e; }
+
+  /* PARTICLES */
+  .particle {
+    position: fixed;
+    pointer-events: none;
+    font-size: 20px;
+    animation: particleFly 1.2s ease-out forwards;
+    z-index: 1000;
+  }
+
+  @keyframes particleFly {
+    0% { transform: translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateY(-120px) scale(0); opacity: 0; }
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .pokemon-sprite { font-size: 50px; min-width: 60px; }
+    .pokemon-name { font-size: 11px; }
+    .word-token { font-size: 14px; padding: 6px 12px; }
+    .btn { font-size: 8px; padding: 10px 16px; }
+  }
+
+  @media print {
+    body { background: white; }
+    .container > *:not(#report-section) { display: none !important; }
+    #report-section { display: block !important; border: 2px solid #333; }
+    .btn-print { display: none; }
+    * { color: #000 !important; background: transparent !important; }
+    .report-title { color: #000 !important; }
+    .report-grade-value { color: #000 !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="logo">⚡ POKÉMON ⚡</div>
+    <div class="subtitle">VERB TO BE ADVENTURE!</div>
+  </header>
+
+  <!-- GAME SECTION -->
+  <div id="game-section">
+    <div class="progress-section">
+      <span class="pokeball-icon">⚪</span>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+      </div>
+      <span class="progress-text" id="progress-text">0 / 15</span>
+    </div>
+
+    <div class="score-board">
+      <div class="score-item score-correct">
+        <span class="score-label">CORRECT</span>
+        <span class="score-value" id="score-correct">0</span>
+      </div>
+      <div class="score-item score-wrong">
+        <span class="score-label">WRONG</span>
+        <span class="score-value" id="score-wrong">0</span>
+      </div>
+    </div>
+
+    <div class="game-card" id="game-card">
+      <div style="text-align:center; margin-bottom: 12px;">
+        <span class="type-badge" id="type-badge">AFFIRMATIVE</span>
+      </div>
+
+      <div class="pokemon-area">
+        <div class="pokemon-sprite" id="pokemon-sprite">🐢</div>
+        <div class="pokemon-info">
+          <div class="pokemon-name" id="pokemon-name">Squirtle</div>
+          <div class="pokemon-hint" id="pokemon-hint">Build the sentence!</div>
+        </div>
+      </div>
+
+      <div class="sentence-area">
+        <span class="drop-zone-label">📝 BUILD THE SENTENCE — DRAG THE WORDS HERE:</span>
+        <div class="drop-zone" id="drop-zone">
+          <span class="placeholder-text" id="placeholder">Drag the words here...</span>
+        </div>
+      </div>
+
+      <div class="word-bank">
+        <span class="word-bank-label">💡 WORD BANK — DRAG THE WORDS:</span>
+        <div class="word-bank-area" id="word-bank-area"></div>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <div class="btn-group">
+        <button class="btn btn-clear" id="btn-clear">🔄 CLEAR</button>
+        <button class="btn btn-check" id="btn-check">⚡ CHECK!</button>
+        <button class="btn btn-next" id="btn-next">▶ NEXT!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINAL SCREEN -->
+  <div id="final-screen">
+    <div class="final-pokemon" id="final-pokemon">🏆</div>
+    <div class="final-title" id="final-title">GAME COMPLETE!</div>
+    <p style="color: rgba(255,255,255,0.6); font-size:14px; margin-bottom: 10px;">You finished all the challenges!</p>
+
+    <div class="name-input-section">
+      <span class="name-input-label">ENTER YOUR NAME:</span>
+      <input type="text" id="student-name" class="name-input" placeholder="Your name here..." maxlength="30">
+      <button class="btn-report" onclick="generateReport()">📋 GET MY REPORT CARD!</button>
+    </div>
+  </div>
+
+  <!-- REPORT -->
+  <div id="report-section">
+    <div class="report-title">🏆 POKÉMON TRAINER REPORT CARD 🏆</div>
+    <div id="report-content"></div>
+    <button class="btn-print" onclick="window.print()">🖨️ PRINT REPORT</button>
+  </div>
+</div>
+
+<script>
+// ===================== DATA =====================
+const questions = [
+  // AFFIRMATIVES (5)
+  { type: 'affirmative', pokemon: '🐢', name: 'Squirtle', hint: 'Squirtle is a <span>Water</span> Pokémon. It loves to swim!', words: ['Squirtle', 'is', 'a', 'Water', 'Pokémon', '.'], answer: ['Squirtle', 'is', 'a', 'Water', 'Pokémon', '.'] },
+  { type: 'affirmative', pokemon: '🔥', name: 'Charmander', hint: '<span>Charmander</span> and <span>Bulbasaur</span> are starter Pokémon.', words: ['and', 'Charmander', 'Bulbasaur', 'are', 'starter', 'Pokémon', '.'], answer: ['Charmander', 'and', 'Bulbasaur', 'are', 'starter', 'Pokémon', '.'] },
+  { type: 'affirmative', pokemon: '💛', name: 'Pikachu', hint: 'Pikachu is <span>very</span> <span>fast</span> in battle!', words: ['Pikachu', 'is', 'in', 'very', 'fast', 'battle', '.'], answer: ['Pikachu', 'is', 'very', 'fast', 'in', 'battle', '.'] },
+  { type: 'affirmative', pokemon: '🌿', name: 'Bulbasaur', hint: 'Bulbasaur and Pikachu are <span>my</span> <span>friends</span>.', words: ['Bulbasaur', 'and', 'are', 'Pikachu', 'my', 'friends', '.'], answer: ['Bulbasaur', 'and', 'Pikachu', 'are', 'my', 'friends', '.'] },
+  { type: 'affirmative', pokemon: '👁️', name: 'Gengar', hint: 'Gengar is a <span>Ghost</span> type. It is <span>scary</span>!', words: ['Gengar', 'is', 'scary', 'a', 'type', 'Ghost', '.'], answer: ['Gengar', 'is', 'a', 'Ghost', 'type', 'scary', '.'] },
+
+  // NEGATIVES (5)
+  { type: 'negative', pokemon: '💧', name: 'Vaporeon', hint: 'Vaporeon is <span>not</span> a Fire type Pokémon.', words: ['Vaporeon', 'is', 'not', 'a', 'Fire', 'type', '.'], answer: ['Vaporeon', 'is', 'not', 'a', 'Fire', 'type', '.'] },
+  { type: 'negative', pokemon: '🌙', name: 'Umbreon', hint: 'Umbreon and Espeon are <span>not</span> Water types.', words: ['not', 'Umbreon', 'and', 'Espeon', 'are', 'Water', 'types', '.'], answer: ['Umbreon', 'and', 'Espeon', 'are', 'not', 'Water', 'types', '.'] },
+  { type: 'negative', pokemon: '⚡', name: 'Raichu', hint: 'Raichu is <span>not</span> a small Pokémon anymore.', words: ['is', 'Raichu', 'small', 'not', 'a', 'Pokémon', 'anymore', '.'], answer: ['Raichu', 'is', 'not', 'a', 'small', 'Pokémon', 'anymore', '.'] },
+  { type: 'negative', pokemon: '🧊', name: 'Glaceon', hint: 'Glaceon is <span>not</span> a Fire or Grass type.', words: ['a', 'Glaceon', 'or', 'is', 'not', 'Fire', 'Grass', 'type', '.'], answer: ['Glaceon', 'is', 'not', 'a', 'Fire', 'or', 'Grass', 'type', '.'] },
+  { type: 'negative', pokemon: '🪨', name: 'Geodude', hint: 'Geodude and Onix are <span>not</span> fast Pokémon.', words: ['fast', 'Geodude', 'and', 'Onix', 'are', 'not', 'Pokémon', '.'], answer: ['Geodude', 'and', 'Onix', 'are', 'not', 'fast', 'Pokémon', '.'] },
+
+  // QUESTIONS (5)
+  { type: 'question', pokemon: '🦊', name: 'Eevee', hint: '<span>Is</span> Eevee your favorite Pokémon?', words: ['Is', 'Eevee', 'your', 'favorite', 'Pokémon', '?'], answer: ['Is', 'Eevee', 'your', 'favorite', 'Pokémon', '?'] },
+  { type: 'question', pokemon: '🐸', name: 'Froakie', hint: '<span>Are</span> you ready to be a Pokémon Trainer?', words: ['Are', 'you', 'ready', 'to', 'be', 'a', 'Trainer', 'Pokémon', '?'], answer: ['Are', 'you', 'ready', 'to', 'be', 'a', 'Pokémon', 'Trainer', '?'] },
+  { type: 'question', pokemon: '🌸', name: 'Jigglypuff', hint: '<span>Is</span> Jigglypuff a Normal type Pokémon?', words: ['Is', 'Jigglypuff', 'a', 'Normal', 'type', 'Pokémon', '?'], answer: ['Is', 'Jigglypuff', 'a', 'Normal', 'type', 'Pokémon', '?'] },
+  { type: 'question', pokemon: '🦅', name: 'Pidgeot', hint: '<span>Are</span> Pidgeot and Fearow Flying types?', words: ['Are', 'Pidgeot', 'and', 'Fearow', 'Flying', 'types', '?'], answer: ['Are', 'Pidgeot', 'and', 'Fearow', 'Flying', 'types', '?'] },
+  { type: 'question', pokemon: '🐉', name: 'Dragonite', hint: '<span>Is</span> Dragonite a Dragon and Flying type?', words: ['Is', 'Dragonite', 'a', 'Dragon', 'and', 'Flying', 'type', '?'], answer: ['Is', 'Dragonite', 'a', 'Dragon', 'and', 'Flying', 'type', '?'] },
+];
+
+// ===================== STATE =====================
+let currentQ = 0;
+let correctCount = 0;
+let wrongCount = 0;
+let answered = false;
+let results = [];
+let draggedEl = null;
+let touchOffsetX = 0, touchOffsetY = 0;
+let cloneEl = null;
+
+// ===================== AUDIO =====================
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new AudioCtx();
+  return audioCtx;
+}
+
+function playCorrectSound() {
+  try {
+    const ctx = getAudioCtx();
+    const notes = [523, 659, 784, 1047];
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = 'triangle';
+      gain.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.1 + 0.15);
+      osc.start(ctx.currentTime + i * 0.1);
+      osc.stop(ctx.currentTime + i * 0.1 + 0.2);
+    });
+  } catch(e) {}
+}
+
+function playWrongSound() {
+  try {
+    const ctx = getAudioCtx();
+    const notes = [300, 220];
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = 'sawtooth';
+      gain.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.2);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.2 + 0.25);
+      osc.start(ctx.currentTime + i * 0.2);
+      osc.stop(ctx.currentTime + i * 0.2 + 0.3);
+    });
+  } catch(e) {}
+}
+
+// ===================== PARTICLES =====================
+function spawnParticles(x, y, correct) {
+  const emojis = correct ? ['⭐','✨','💫','🎉','⚡'] : ['💨','❌','🌀'];
+  for (let i = 0; i < 6; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    p.style.left = (x + (Math.random()-0.5)*80) + 'px';
+    p.style.top = (y + (Math.random()-0.5)*40) + 'px';
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1200);
+  }
+}
+
+// ===================== RENDER =====================
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function renderQuestion() {
+  answered = false;
+  const q = questions[currentQ];
+
+  // Progress
+  const pct = (currentQ / questions.length) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `${currentQ} / ${questions.length}`;
+  document.getElementById('score-correct').textContent = correctCount;
+  document.getElementById('score-wrong').textContent = wrongCount;
+
+  // Type badge
+  const badge = document.getElementById('type-badge');
+  const typeMap = { affirmative: 'type-affirmative', negative: 'type-negative', question: 'type-question' };
+  const typeLabel = { affirmative: '✅ AFFIRMATIVE', negative: '❌ NEGATIVE', question: '❓ QUESTION' };
+  badge.className = 'type-badge ' + typeMap[q.type];
+  badge.textContent = typeLabel[q.type];
+
+  // Pokemon
+  document.getElementById('pokemon-sprite').textContent = q.pokemon;
+  document.getElementById('pokemon-name').textContent = q.name;
+  document.getElementById('pokemon-hint').innerHTML = q.hint;
+
+  // Drop zone
+  const dz = document.getElementById('drop-zone');
+  dz.innerHTML = '<span class="placeholder-text" id="placeholder">Drag the words here...</span>';
+  dz.className = 'drop-zone';
+
+  // Word bank
+  const wb = document.getElementById('word-bank-area');
+  wb.innerHTML = '';
+  const shuffled = shuffle(q.words);
+  shuffled.forEach((word, idx) => {
+    const token = createToken(word, idx);
+    wb.appendChild(token);
+  });
+
+  // Feedback
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback';
+  fb.textContent = '';
+
+  // Buttons
+  document.getElementById('btn-next').classList.remove('show');
+  document.getElementById('btn-check').style.display = '';
+
+  // Re-init drag
+  initDrag();
+}
+
+function createToken(word, idx) {
+  const token = document.createElement('div');
+  token.className = 'word-token';
+  token.textContent = word;
+  token.dataset.word = word;
+  token.dataset.id = idx + '_' + word;
+  token.draggable = true;
+  return token;
+}
+
+// ===================== DRAG & DROP =====================
+function initDrag() {
+  const dz = document.getElementById('drop-zone');
+
+  document.querySelectorAll('.word-token').forEach(tok => {
+    tok.addEventListener('dragstart', onDragStart);
+    tok.addEventListener('dragend', onDragEnd);
+    tok.addEventListener('touchstart', onTouchStart, { passive: false });
+    tok.addEventListener('touchmove', onTouchMove, { passive: false });
+    tok.addEventListener('touchend', onTouchEnd, { passive: false });
+  });
+
+  dz.addEventListener('dragover', onDragOver);
+  dz.addEventListener('drop', onDropToZone);
+  dz.addEventListener('dragleave', onDragLeave);
+
+  document.getElementById('word-bank-area').addEventListener('dragover', onDragOver);
+  document.getElementById('word-bank-area').addEventListener('drop', onDropToBank);
+}
+
+function onDragStart(e) {
+  if (answered) return;
+  draggedEl = this;
+  this.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function onDragEnd(e) {
+  if (draggedEl) draggedEl.classList.remove('dragging');
+  draggedEl = null;
+  document.getElementById('drop-zone').classList.remove('drag-over');
+}
+
+function onDragOver(e) {
+  if (answered) return;
+  e.preventDefault();
+  if (this.id === 'drop-zone' || this.classList.contains('word-bank-area')) {
+    this.classList.add('drag-over');
+  }
+}
+
+function onDragLeave(e) {
+  this.classList.remove('drag-over');
+}
+
+function onDropToZone(e) {
+  if (answered) return;
+  e.preventDefault();
+  this.classList.remove('drag-over');
+  if (!draggedEl) return;
+  removePlaceholder();
+  draggedEl.classList.remove('dragging');
+  draggedEl.classList.add('in-drop-zone');
+  this.appendChild(draggedEl);
+}
+
+function onDropToBank(e) {
+  if (answered) return;
+  e.preventDefault();
+  this.classList.remove('drag-over');
+  if (!draggedEl) return;
+  draggedEl.classList.remove('dragging', 'in-drop-zone');
+  this.appendChild(draggedEl);
+  checkPlaceholder();
+}
+
+function removePlaceholder() {
+  const ph = document.getElementById('placeholder');
+  if (ph) ph.remove();
+}
+
+function checkPlaceholder() {
+  const dz = document.getElementById('drop-zone');
+  if (!dz.querySelector('.word-token')) {
+    dz.innerHTML = '<span class="placeholder-text" id="placeholder">Drag the words here...</span>';
+  }
+}
+
+// ===================== TOUCH DRAG =====================
+function onTouchStart(e) {
+  if (answered) return;
+  e.preventDefault();
+  draggedEl = this;
+  const touch = e.touches[0];
+  const rect = this.getBoundingClientRect();
+  touchOffsetX = touch.clientX - rect.left;
+  touchOffsetY = touch.clientY - rect.top;
+  cloneEl = this.cloneNode(true);
+  cloneEl.style.position = 'fixed';
+  cloneEl.style.zIndex = '9999';
+  cloneEl.style.opacity = '0.85';
+  cloneEl.style.pointerEvents = 'none';
+  cloneEl.style.left = (touch.clientX - touchOffsetX) + 'px';
+  cloneEl.style.top = (touch.clientY - touchOffsetY) + 'px';
+  document.body.appendChild(cloneEl);
+  this.style.opacity = '0.3';
+}
+
+function onTouchMove(e) {
+  if (!cloneEl) return;
+  e.preventDefault();
+  const touch = e.touches[0];
+  cloneEl.style.left = (touch.clientX - touchOffsetX) + 'px';
+  cloneEl.style.top = (touch.clientY - touchOffsetY) + 'px';
+
+  const dz = document.getElementById('drop-zone');
+  const wb = document.getElementById('word-bank-area');
+  const rect1 = dz.getBoundingClientRect();
+  const rect2 = wb.getBoundingClientRect();
+  const tx = touch.clientX, ty = touch.clientY;
+  const overDZ = tx >= rect1.left && tx <= rect1.right && ty >= rect1.top && ty <= rect1.bottom;
+  const overWB = tx >= rect2.left && tx <= rect2.right && ty >= rect2.top && ty <= rect2.bottom;
+  dz.classList.toggle('drag-over', overDZ);
+  wb.classList.toggle('drag-over', overWB);
+}
+
+function onTouchEnd(e) {
+  if (!cloneEl || !draggedEl) return;
+  cloneEl.remove(); cloneEl = null;
+  draggedEl.style.opacity = '';
+  document.getElementById('drop-zone').classList.remove('drag-over');
+  document.getElementById('word-bank-area').classList.remove('drag-over');
+
+  const touch = e.changedTouches[0];
+  const dz = document.getElementById('drop-zone');
+  const wb = document.getElementById('word-bank-area');
+  const rect1 = dz.getBoundingClientRect();
+  const rect2 = wb.getBoundingClientRect();
+  const tx = touch.clientX, ty = touch.clientY;
+
+  if (tx >= rect1.left && tx <= rect1.right && ty >= rect1.top && ty <= rect1.bottom) {
+    removePlaceholder();
+    draggedEl.classList.add('in-drop-zone');
+    dz.appendChild(draggedEl);
+  } else if (tx >= rect2.left && tx <= rect2.right && ty >= rect2.top && ty <= rect2.bottom) {
+    draggedEl.classList.remove('in-drop-zone');
+    wb.appendChild(draggedEl);
+    checkPlaceholder();
+  }
+  draggedEl = null;
+}
+
+// ===================== CHECK =====================
+document.getElementById('btn-check').addEventListener('click', () => {
+  if (answered) return;
+  const dz = document.getElementById('drop-zone');
+  const tokens = dz.querySelectorAll('.word-token');
+  if (tokens.length === 0) {
+    shake(dz);
+    return;
+  }
+
+  const q = questions[currentQ];
+  const userAnswer = Array.from(tokens).map(t => t.dataset.word);
+  const isCorrect = JSON.stringify(userAnswer) === JSON.stringify(q.answer);
+  answered = true;
+
+  const fb = document.getElementById('feedback');
+  const btnRect = document.getElementById('btn-check').getBoundingClientRect();
+  const cx = btnRect.left + btnRect.width / 2;
+  const cy = btnRect.top + btnRect.height / 2;
+
+  if (isCorrect) {
+    playCorrectSound();
+    correctCount++;
+    dz.classList.add('correct-answer');
+    fb.className = 'feedback correct';
+    fb.innerHTML = '🎉 EXCELLENT! CORRECT! ⭐';
+    spawnParticles(cx, cy, true);
+  } else {
+    playWrongSound();
+    wrongCount++;
+    dz.classList.add('wrong-answer');
+    fb.className = 'feedback wrong';
+    fb.innerHTML = `❌ NOT QUITE! Try again next time!<div class="correct-sentence">✅ Correct: ${q.answer.join(' ')}</div>`;
+    spawnParticles(cx, cy, false);
+    shake(dz);
+  }
+
+  results.push({ question: q.name + ': ' + q.hint.replace(/<[^>]*>/g, ''), type: q.type, correct: isCorrect, answer: q.answer.join(' '), userAnswer: userAnswer.join(' ') });
+
+  document.getElementById('score-correct').textContent = correctCount;
+  document.getElementById('score-wrong').textContent = wrongCount;
+  document.getElementById('btn-next').classList.add('show');
+  document.getElementById('btn-check').style.display = 'none';
+
+  // Disable drag
+  dz.querySelectorAll('.word-token').forEach(t => t.draggable = false);
+});
+
+document.getElementById('btn-clear').addEventListener('click', () => {
+  if (answered) return;
+  const dz = document.getElementById('drop-zone');
+  const wb = document.getElementById('word-bank-area');
+  dz.querySelectorAll('.word-token').forEach(t => {
+    t.classList.remove('in-drop-zone');
+    wb.appendChild(t);
+  });
+  dz.innerHTML = '<span class="placeholder-text" id="placeholder">Drag the words here...</span>';
+});
+
+document.getElementById('btn-next').addEventListener('click', () => {
+  currentQ++;
+  if (currentQ >= questions.length) {
+    endGame();
+  } else {
+    document.getElementById('game-card').style.animation = 'none';
+    requestAnimationFrame(() => {
+      document.getElementById('game-card').style.animation = '';
+      renderQuestion();
+    });
+  }
+});
+
+function shake(el) {
+  el.style.animation = 'none';
+  el.style.transform = 'translateX(-8px)';
+  setTimeout(() => { el.style.transform = 'translateX(8px)'; }, 80);
+  setTimeout(() => { el.style.transform = 'translateX(-5px)'; }, 160);
+  setTimeout(() => { el.style.transform = 'translateX(5px)'; }, 240);
+  setTimeout(() => { el.style.transform = ''; }, 320);
+}
+
+// ===================== END GAME =====================
+function endGame() {
+  document.getElementById('game-section').style.display = 'none';
+  const fs = document.getElementById('final-screen');
+  fs.style.display = 'block';
+
+  const score = Math.round((correctCount / questions.length) * 100);
+  const gradeEl = document.createElement('div');
+  gradeEl.className = 'grade-display ' + (score >= 90 ? 'grade-a' : score >= 70 ? 'grade-b' : score >= 50 ? 'grade-c' : 'grade-d');
+  gradeEl.textContent = score + '/100';
+  fs.insertBefore(gradeEl, document.getElementById('final-pokemon').nextSibling.nextSibling);
+
+  const pokemon = score >= 90 ? '🏆' : score >= 70 ? '⭐' : score >= 50 ? '💪' : '📚';
+  document.getElementById('final-pokemon').textContent = pokemon;
+
+  const msg = score >= 90 ? 'POKÉMON MASTER!' : score >= 70 ? 'GREAT TRAINER!' : score >= 50 ? 'KEEP TRAINING!' : 'NEED MORE PRACTICE!';
+  document.getElementById('final-title').textContent = msg;
+}
+
+// ===================== REPORT =====================
+function generateReport() {
+  const name = document.getElementById('student-name').value.trim() || 'Student';
+  const score = Math.round((correctCount / questions.length) * 100);
+  const date = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  const grade = score >= 90 ? 'A' : score >= 80 ? 'B+' : score >= 70 ? 'B' : score >= 60 ? 'C' : 'D';
+  const gradeClass = score >= 90 ? 'grade-a' : score >= 70 ? 'grade-b' : score >= 50 ? 'grade-c' : 'grade-d';
+  const affCorrect = results.filter(r => r.type === 'affirmative' && r.correct).length;
+  const negCorrect = results.filter(r => r.type === 'negative' && r.correct).length;
+  const qCorrect = results.filter(r => r.type === 'question' && r.correct).length;
+
+  let itemsHtml = results.map((r, i) => `
+    <div class="report-item ${r.correct ? 'report-item-correct' : 'report-item-wrong'}">
+      <span>${i+1}. ${r.type.charAt(0).toUpperCase()+r.type.slice(1)} — ${['Squirtle','Charmander','Pikachu','Bulbasaur','Gengar','Vaporeon','Umbreon','Raichu','Glaceon','Geodude','Eevee','Froakie','Jigglypuff','Pidgeot','Dragonite'][i]}</span>
+      <span class="report-item-badge ${r.correct ? 'badge-correct' : 'badge-wrong'}">${r.correct ? 'OK' : 'FAIL'}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('report-content').innerHTML = `
+    <div class="report-field"><span class="report-field-label">📛 Student Name</span><span class="report-field-value">${name}</span></div>
+    <div class="report-field"><span class="report-field-label">📅 Date</span><span class="report-field-value">${date}</span></div>
+    <div class="report-field"><span class="report-field-label">📝 Subject</span><span class="report-field-value">English – Verb TO BE</span></div>
+    <div class="report-field"><span class="report-field-label">🎓 Grade Level</span><span class="report-field-value">4th Grade</span></div>
+    <div class="report-field"><span class="report-field-label">✅ Affirmative Correct</span><span class="report-field-value">${affCorrect} / 5</span></div>
+    <div class="report-field"><span class="report-field-label">❌ Negative Correct</span><span class="report-field-value">${negCorrect} / 5</span></div>
+    <div class="report-field"><span class="report-field-label">❓ Question Correct</span><span class="report-field-value">${qCorrect} / 5</span></div>
+    <div class="report-field"><span class="report-field-label">📊 Total Correct</span><span class="report-field-value">${correctCount} / ${questions.length}</span></div>
+    <div class="report-final-grade">
+      <span class="report-grade-label">FINAL SCORE</span>
+      <div class="report-grade-value ${gradeClass}">${score}<span style="font-size:24px">/100</span></div>
+      <div style="color:rgba(255,255,255,0.5); font-size:12px; margin-top:8px; font-weight:700;">Letter Grade: ${grade}</div>
+    </div>
+    <div class="report-breakdown">
+      <div class="report-breakdown-title">📋 EXERCISE BREAKDOWN:</div>
+      ${itemsHtml}
+    </div>
+  `;
+
+  document.getElementById('report-section').style.display = 'block';
+  document.getElementById('report-section').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ===================== INIT =====================
+renderQuestion();
+</script>
+</body>
+</html>
